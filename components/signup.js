@@ -1,9 +1,11 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useRef } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { ExclamationIcon, XIcon } from '@heroicons/react/outline'
 
 export default function SignUp(props) {
+
+
 const handleSignin=()=>{
     props.handleOpenSignin()
     console.log(props)

@@ -1,9 +1,55 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useRef } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { ExclamationIcon, XIcon } from '@heroicons/react/outline'
 
 export default function SignUp( props) {
+    const emailRef = useRef();
+    const passwordRef = useRef();
+    const phoneRef = useRef();
+    const firstnameRef = useRef();
+    const lastnameRef = useRef();
+
+    const handleSignin=()=>{
+        props.handleOpenSignin()
+        console.log(props)
+    }
+    const onFormSubmit = async (e) => {
+        e.preventDefault();
+        //Getting value from useRef()
+
+
+        const email = emailRef.current.value;
+        const password = passwordRef.current.value;
+        const phone= phoneRef.current.value;
+        const firstName= firstnameRef.current.value;
+        const lastName= lastnameRef.current.value
+
+        console.log("*********",email)
+        //Validation
+        if (!email || !email.includes('@') || !password || !phone || !firstName || !lastName) {
+            alert('Invalid details');
+            return;
+        }
+        //POST form values
+        const res = await fetch('/api/auth/SignUp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password,
+                phone: phone,
+                firstName:firstName,
+                lastName:lastName,
+            }),
+        });
+        //Await for data for any desirable next steps
+        const data = await res.json();
+        console.log('uuuuuuuu',data);
+        alert(data.message);
+    };
  const handleOpen=()=>{
      props.handleOpenSignup()
  }
@@ -69,6 +115,7 @@ export default function SignUp( props) {
                                                         </label>
                                                         <div className="mt-1">
                                                             <input
+                                                                ref={firstnameRef}
                                                                 id="firstName"
                                                                 name="firstName"
                                                                 type="text"
@@ -83,6 +130,7 @@ export default function SignUp( props) {
                                                         </label>
                                                         <div className="mt-1">
                                                             <input
+                                                                ref={lastnameRef}
                                                                 id="lastName"
                                                                 name="lastName"
                                                                 type="text"
@@ -97,6 +145,7 @@ export default function SignUp( props) {
                                                         </label>
                                                         <div className="mt-1">
                                                             <input
+                                                                ref={phoneRef}
                                                                 id="phone"
                                                                 name="phone"
                                                                 type="phone"
@@ -111,6 +160,7 @@ export default function SignUp( props) {
                                                         </label>
                                                         <div className="mt-1">
                                                             <input
+                                                                ref={emailRef}
                                                                 id="userName"
                                                                 name="userName"
                                                                 type="email"
@@ -125,6 +175,7 @@ export default function SignUp( props) {
                                                         </label>
                                                         <div className="mt-1">
                                                             <input
+                                                                ref={passwordRef}
                                                                 id="password"
                                                                 name="password"
                                                                 type="password"
@@ -155,6 +206,7 @@ export default function SignUp( props) {
                                                 </form>
                                                 <div className='mt-10'>
                                                     <button
+                                                        onClick={onFormSubmit}
                                                         type="submit"
                                                         className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                                     >
