@@ -2,14 +2,45 @@
 import { Fragment, useState, useRef } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { ExclamationIcon, XIcon } from '@heroicons/react/outline'
+import { signIn } from 'next-auth/client';
+import { useRouter } from 'next/router';
+import { hash } from 'bcryptjs';
 
 export default function SignUp(props) {
+    const router = useRouter();
 
+    const emailInputRef = useRef();
+    const passwordInputRef = useRef();
 
 const handleSignin=()=>{
     props.handleOpenSignin()
     console.log(props)
 }
+    async function submitHandler(event) {
+        event.preventDefault();
+
+        const enteredEmail = emailInputRef.current.value;
+        const enteredPassword = passwordInputRef.current.value;
+        console.log("*********",enteredPassword)
+
+
+        // optional: Add validation
+
+            const result = await signIn('credentials', {
+                redirect: false,
+                email: enteredEmail,
+                password: enteredPassword,
+            });
+            console.log("result is", result)
+
+
+        if (!result.error) {
+                alert('success')
+                // set some auth state
+                router.replace('/profile');
+            }
+
+    }
     return (
         <Transition.Root show={props.isOpen} as={Fragment}>
             <Dialog as="div" className="fixed z-10 inset-0 overflow-y-auto" onClose={props.close}>
@@ -77,6 +108,7 @@ const handleSignin=()=>{
                                                         </label>
                                                         <div className="mt-1">
                                                             <input
+                                                                ref={emailInputRef}
                                                                 id="email"
                                                                 name="email"
                                                                 type="email"
@@ -93,6 +125,7 @@ const handleSignin=()=>{
                                                         </label>
                                                         <div className="mt-1">
                                                             <input
+                                                                ref={passwordInputRef}
                                                                 id="password"
                                                                 name="password"
                                                                 type="password"
@@ -125,6 +158,7 @@ const handleSignin=()=>{
 
                                                     <div>
                                                         <button
+                                                            onClick={submitHandler}
                                                             type="submit"
                                                             className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                                         >

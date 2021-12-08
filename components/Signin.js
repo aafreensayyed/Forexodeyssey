@@ -1,9 +1,11 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useState, useRef } from 'react'
-import { Dialog, Transition } from '@headlessui/react'
-import { ExclamationIcon, XIcon } from '@heroicons/react/outline'
+import { Fragment, useState, useRef } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+import { ExclamationIcon, XIcon } from '@heroicons/react/outline';
+import { useRouter } from 'next/router';
 
 export default function SignUp( props) {
+    const router = useRouter();
     const emailRef = useRef();
     const passwordRef = useRef();
     const phoneRef = useRef();
@@ -47,8 +49,8 @@ export default function SignUp( props) {
         });
         //Await for data for any desirable next steps
         const data = await res.json();
-        console.log('uuuuuuuu',data);
         alert(data.message);
+        props.handleOpenSignup();
     };
  const handleOpen=()=>{
      props.handleOpenSignup()

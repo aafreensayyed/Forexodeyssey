@@ -42,9 +42,11 @@ export default function Example() {
         setSigninModalOpen(false);
     }
 
+
+
     return (
         <>
-            <SignIn isOpen={isSigninModalOpen} close={closeSigninModal} handleOpenSignup={handleOpenSignup} />
+            <SignIn isOpen={isSigninModalOpen} close={closeSigninModal} handleOpenSignup={handleOpenSignup}  />
             <SignUp isOpen={isSignupModalOpen} close={closeSignupModal} handleOpenSignin={handleOpen}/>
             <Disclosure as="nav" className="bg-gray-800">
                 {({ open }) => (

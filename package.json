@@ -11,7 +11,7 @@
     "bcryptjs": "^2.4.3",
     "mongoose": "^6.0.14",
     "next": "latest",
-    "next-auth": "^4.0.2",
+    "next-auth": "^3.29.0",
     "normalize.css": "^8.0.1",
     "react": "^17.0.2",
     "react-animated-slider": "^2.0.0",
