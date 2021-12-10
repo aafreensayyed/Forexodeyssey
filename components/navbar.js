@@ -2,29 +2,27 @@ import { Fragment ,useState} from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { SearchIcon } from '@heroicons/react/solid'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
-import SignUp from './signup'
-import SignIn from './Signin'
+import SignUp from './login'
+import SignIn from './registration'
 import Link from 'next/link'
+import UserCreatedModal from './userCreatedModal'
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-
-
 export default function Example() {
 
     const [isSignupModalOpen, setSignupModalOpen] = useState(false);
     const [isSigninModalOpen, setSigninModalOpen] = useState(false);
+    const [signupModal,setupsigupModal]=useState(false)
+
 
     const openSignupModal = () => {
         setSignupModalOpen(true);
     }
 
-    const openSigninModal = () => {
-        setSigninModalOpen(true);
-    }
-
+    
     const closeSignupModal = () => {
         setSignupModalOpen(false);
     }
@@ -42,12 +40,24 @@ export default function Example() {
         setSigninModalOpen(false);
     }
 
+    const handleuserCreated=()=>{
+        closeSigninModal()
+        setupsigupModal(true)
+    }
+
+    const closeUserCreated=()=>{
+        setupsigupModal(false)
+        setSignupModalOpen(true);
+    }
+        
+
 
 
     return (
         <>
-            <SignIn isOpen={isSigninModalOpen} close={closeSigninModal} handleOpenSignup={handleOpenSignup}  />
-            <SignUp isOpen={isSignupModalOpen} close={closeSignupModal} handleOpenSignin={handleOpen}/>
+            <SignIn isOpen={isSigninModalOpen} close={closeSigninModal} handleOpenSignup={handleOpenSignup} userCreated={handleuserCreated}  />
+            <SignUp isOpen={isSignupModalOpen} close={closeSignupModal} handleOpenSignin={handleOpen} />
+            <UserCreatedModal isOpen={signupModal} closeUserCreated={closeUserCreated} />
             <Disclosure as="nav" className="bg-gray-800">
                 {({ open }) => (
                     <>

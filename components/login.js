@@ -6,11 +6,13 @@ import { signIn } from 'next-auth/client';
 import { useRouter } from 'next/router';
 import { hash } from 'bcryptjs';
 
-export default function SignUp(props) {
-    const router = useRouter();
 
+export default function SignUp(props) {
+
+    const router = useRouter();
     const emailInputRef = useRef();
     const passwordInputRef = useRef();
+
 
 const handleSignin=()=>{
     props.handleOpenSignin()
@@ -18,30 +20,26 @@ const handleSignin=()=>{
 }
     async function submitHandler(event) {
         event.preventDefault();
-
         const enteredEmail = emailInputRef.current.value;
         const enteredPassword = passwordInputRef.current.value;
-        console.log("*********",enteredPassword)
-
-
-        // optional: Add validation
-
             const result = await signIn('credentials', {
                 redirect: false,
                 email: enteredEmail,
                 password: enteredPassword,
             });
             console.log("result is", result)
-
-
         if (!result.error) {
                 alert('success')
                 // set some auth state
-                router.replace('/profile');
+                // router.replace('/profile');
+               
+                
             }
 
     }
     return (
+        <>
+       
         <Transition.Root show={props.isOpen} as={Fragment}>
             <Dialog as="div" className="fixed z-10 inset-0 overflow-y-auto" onClose={props.close}>
                 <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -233,6 +231,7 @@ const handleSignin=()=>{
                 </div>
             </Dialog>
         </Transition.Root>
+      </>
     )
 }
 
