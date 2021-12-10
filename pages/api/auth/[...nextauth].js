@@ -2,6 +2,7 @@ import NextAuth from 'next-auth';
 import Providers from 'next-auth/providers';
 import { MongoClient } from 'mongodb';
 import { compare } from 'bcryptjs';
+import GoogleProvider from 'next-auth/providers/google'
 
 export default NextAuth({
     //Configure JWT
@@ -23,8 +24,6 @@ export default NextAuth({
                 const result = await users.findOne({
                     email: credentials.email,
                 });
-
-                    console.log("other result", credentials.password)
                 //Not found - send error res
                 if (!result) {
                     client.close();
@@ -39,8 +38,17 @@ export default NextAuth({
                 }
                 //Else send success response
                 client.close();
-                return { email: result.email };
+                                console.log(result.firstName)
+
+                return {
+                email: result.email,
+                name: result.firstName + result.lastName,
+                };
             },
         }),
+        Providers.Google({
+                    clientId:'699426608212-7d279aq3s1q3ncskbctanc045bc8rqhc.apps.googleusercontent.com',
+                    clientSecret:'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'
+                }),
     ],
 });

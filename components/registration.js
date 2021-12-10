@@ -3,7 +3,6 @@ import { Fragment, useState, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XIcon } from '@heroicons/react/outline';
 import { useRouter } from 'next/router';
-import Loader from 'react-loader-spinner';
 export default function SignUp(props) {
     const [isloading, setIsloading] = useState(false)
 
