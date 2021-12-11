@@ -2,39 +2,64 @@
 import { Fragment, useState, useRef, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationIcon, XIcon } from "@heroicons/react/outline";
-import { signIn, useSession } from "next-auth/client";
+import { signIn } from "next-auth/client";
 import { useRouter } from "next/router";
 import { hash } from "bcryptjs";
+import Loader from './loader'
 
 export default function SignUp(props) {
-  const [session] = useSession();
-
-  const router = useRouter();
+  const [isloading, setIsloading] = useState(false)
+  const [userData,setuserData]=useState({
+    email:'',
+    password:''
+  })
+  const [err, seterr] = useState('')
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
 
   const handleSignin = () => {
     props.handleOpenSignin();
   };
-
   
+
+  const handleChange=(e)=>{//function for storing value in state
+    const {value}=e.target
+    console.log()
+    seterr('')
+    setuserData(prevState=>({
+        ...prevState,
+        [e.target.name]:value
+    }))
+}
+
+  useEffect(()=>{
+    console.log(userData)
+  },[userData])
   async function submitHandler(event) {
     event.preventDefault();
-    const enteredEmail = emailInputRef.current.value;
-    const enteredPassword = passwordInputRef.current.value;
-    const result = await signIn("credentials", {
-      redirect: false,
-      email: enteredEmail,
-      password: enteredPassword,
-    });
+    const{email,password}=userData
 
-
-    if (!result.error) {
-      alert("success");
-      // set some auth state
-      // router.replace('/profile');
+    if (!email || !password) {
+      seterr('Input Fields cannot be empty')
+    } else {
+      setIsloading(true)
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: email,
+        password: password,
+      });
+      setIsloading(false)
+      if (!result.error) {
+        props.close()
+        
+        // set some auth state
+        // router.replace('/profile');
+      } else {
+        seterr(result.error)
+      }
     }
   }
+
   return (
     <>
       <Transition.Root show={props.isOpen} as={Fragment}>
@@ -72,7 +97,7 @@ export default function SignUp(props) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+              <div className=" relative inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
                 <div className="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
                   <button
                     type="button"
@@ -118,7 +143,8 @@ export default function SignUp(props) {
                               </label>
                               <div className="mt-1">
                                 <input
-                                  ref={emailInputRef}
+                                  onChange={handleChange}
+                                  value={userData.email}
                                   id="email"
                                   name="email"
                                   type="email"
@@ -137,15 +163,16 @@ export default function SignUp(props) {
                                 Password
                               </label>
                               <div className="mt-1">
-                                <input
-                                  ref={passwordInputRef}
-                                  id="password"
-                                  name="password"
+                              <input
                                   type="password"
+                                  id="password"
+                                  value={userData.password}
+                                  onChange={handleChange}
+                                  name='password'
                                   autoComplete="current-password"
                                   required
                                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                />
+                              />
                               </div>
                             </div>
 
@@ -174,7 +201,9 @@ export default function SignUp(props) {
                                 </a>
                               </div>
                             </div>
-
+                            <div>
+                                {err!==""?<p className='text-red-600 text-sm m-5 text-center'>{err}</p>:<></>}
+                            </div>
                             <div>
                               <button
                                 onClick={submitHandler}
@@ -263,6 +292,7 @@ export default function SignUp(props) {
                     </div>
                   </div>
                 </div>
+                <Loader loading={isloading}/>
               </div>
             </Transition.Child>
           </div>

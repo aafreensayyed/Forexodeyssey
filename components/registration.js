@@ -1,47 +1,70 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useState, useRef } from 'react';
+import { Fragment, useState, useRef, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XIcon } from '@heroicons/react/outline';
-import { useRouter } from 'next/router';
-
-
-
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
+import Loader from './loader'
 
 export default function SignUp(props) {
     const [isloading, setIsloading] = useState(false)
+    const [userData,setuserData]=useState({
+        email:'',
+        password:'',
+        phone:'',
+        firstName:'',
+        lastName:''
+        
+    })
+    const [err,seterr]=useState('')
 
-    const router = useRouter();
-    const emailRef = useRef();
-    const passwordRef = useRef();
-    const phoneRef = useRef();
-    const firstnameRef = useRef();
-    const lastnameRef = useRef();
-
-    const handleSignin = () => {
-        props.handleOpenSignin()
-      
+    const handleChange=(e)=>{//function for storing value in state
+        const {value}=e.target
+        console.log()
+        seterr('')
+        setuserData(prevState=>({
+            ...prevState,
+            [e.target.name]:value
+        }))
     }
 
+    const handlephone=(e)=>{//function for storing data in phone no
+        seterr('')
+        setuserData(prevState=>({
+            ...prevState,
+            phone:e
+        }))
+    }
 
     const onFormSubmit = async (e) => {
         e.preventDefault();
-        // Getting value from useRef()
-        setIsloading(true)
-        const email = emailRef.current.value;
-        const password = passwordRef.current.value;
-        const phone = phoneRef.current.value;
-        const firstName = firstnameRef.current.value;
-        const lastName = lastnameRef.current.value
-
-        
-
+        // Getting value from state
+        const { email,password,phone,firstName,lastName,confirmPassword}=userData
         //Validation
-        if (!email || !email.includes('@') || !password || !phone || !firstName || !lastName) {
-            alert('Invalid details');
+        if (!email || !password || !phone || !firstName || !lastName || !confirmPassword) {
+            seterr('Input fields cannot be empty')
             return;
-        }
-        //POST form values
-        const res = await fetch('/api/auth/SignUp', {
+        } else if(password!==confirmPassword){
+            seterr('Password and Confirm password should be same')
+            return;
+        } else if(password.length<8){
+            seterr('Your password must be at least 8 characters')
+            return; 
+        } else if(password.search(/[a-z]/i)<0){
+            seterr('Your password must contain at least one letter')
+            return; 
+        }else if(password.search(/[0-9]/i)<0){
+            seterr('Your password must contain at least one digit')
+            return; 
+        }else if(password.search(/[!@#$%^&*]/)<0){
+            seterr('Your password must contain at least one special character ')
+            return; 
+        }else if(email.search(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)<0){
+            seterr('Please provide valid email ')
+            return; 
+        } else {
+            setIsloading(true)
+            const res = await fetch('/api/auth/SignUp', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -54,25 +77,20 @@ export default function SignUp(props) {
                 lastName: lastName,
             }),
         });
-        setIsloading(false)
-
-        
-        //Await for data for any desirable next steps
+         // //Await for data for any desirable next steps
         const data = await res.json();
-        console.log('data',data)
-
-      
-       
+        setIsloading(false) 
         props.userCreated()// logic to open successfully creation of user modal
-
+        }
+        
+        
     };
     const handleOpen = () => {
         props.handleOpenSignup()
     }
     return (
         <>
-
-
+          
             <Transition.Root show={props.isOpen} as={Fragment}>
                 <Dialog as="div" className="fixed z-10 inset-0 overflow-y-auto" onClose={props.close}>
                     <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -101,7 +119,7 @@ export default function SignUp(props) {
                             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         >
-                            <div className="inline-block align-bottom bg-white rounded-lg  pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-2 sm:align-middle sm:max-w-lg sm:w-full ">
+                            <div className=" relative inline-block align-bottom bg-white rounded-lg  pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-2 sm:align-middle sm:max-w-lg sm:w-full ">
                                 <div className="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
                                     <button
                                         type="button"
@@ -114,7 +132,7 @@ export default function SignUp(props) {
                                 </div>
                                 <div className="sm:flex sm:items-start">
                                     <div className="mt-1 text-center sm:mt-0 sm:ml-2 sm:text-left">
-                                        <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+                                        <div className="min-h-full flex flex-col justify-center py-12 sm:px-4 lg:px-4">
                                             <div className="sm:mx-auto sm:w-full sm:max-w-md">
                                                 <img
                                                     className="mx-auto h-12 w-auto"
@@ -126,15 +144,16 @@ export default function SignUp(props) {
                                             </div>
 
                                             <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
-                                                <div className="bg-white py-6 px-4 shadow sm:rounded-lg sm:px-10">
+                                                <div className="bg-white py-6 sm:px-2">
                                                     <form className=" flex items-baseline justify-between flex-wrap space-y-6" action="#" method="POST">
-                                                        <div className="w-2/5">
+                                                        <div className='w-full lg:w-[45%]'>
                                                             <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
                                                                 First Name
                                                             </label>
                                                             <div className="mt-1">
                                                                 <input
-                                                                    ref={firstnameRef}
+                                                                    onChange={handleChange}
+                                                                    value={userData.firstName}
                                                                     id="firstName"
                                                                     name="firstName"
                                                                     type="text"
@@ -143,13 +162,14 @@ export default function SignUp(props) {
                                                                 />
                                                             </div>
                                                         </div>
-                                                        <div className="w-2/5">
+                                                        <div className="w-full lg:w-[45%]">
                                                             <label htmlFor="lirstName" className="block text-sm font-medium text-gray-700">
                                                                 Last Name
                                                             </label>
                                                             <div className="mt-1">
                                                                 <input
-                                                                    ref={lastnameRef}
+                                                                   onChange={handleChange}
+                                                                   value={userData.lastName}
                                                                     id="lastName"
                                                                     name="lastName"
                                                                     type="text"
@@ -158,53 +178,54 @@ export default function SignUp(props) {
                                                                 />
                                                             </div>
                                                         </div>
-                                                        <div className="w-2/5">
+                                                        <div className="w-full lg:w-[45%]">
                                                             <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
                                                                 Phone Number
                                                             </label>
                                                             <div className="mt-1">
-                                                                <input
-                                                                    ref={phoneRef}
-                                                                    id="phone"
-                                                                    name="phone"
-                                                                    type="phone"
-                                                                    required
-                                                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                                />
+                                                            <PhoneInput
+                                                                country={'us'}
+                                                                value={userData.phone}
+                                                                onChange={(phone)=>handlephone(phone)}
+                                                                name='phone'
+                                                            />
+                                                                
                                                             </div>
                                                         </div>
-                                                        <div className="w-2/5">
-                                                            <label htmlFor="userName" className="block text-sm font-medium text-gray-700">
-                                                                User Name
+                                                        <div className="w-full lg:w-[45%]">
+                                                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                                                                Email
                                                             </label>
                                                             <div className="mt-1">
                                                                 <input
-                                                                    ref={emailRef}
-                                                                    id="userName"
-                                                                    name="userName"
+                                                                    value={userData.email}
+                                                                    onChange={handleChange}
+                                                                    id="email"
+                                                                    name="email"
                                                                     type="email"
                                                                     required
                                                                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                                 />
                                                             </div>
                                                         </div>
-                                                        <div className="w-2/5">
+                                                        <div className="w-full lg:w-[45%]">
                                                             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                                                                 Password
                                                             </label>
                                                             <div className="mt-1">
                                                                 <input
-                                                                    ref={passwordRef}
-                                                                    id="password"
-                                                                    name="password"
                                                                     type="password"
+                                                                    id="password"
+                                                                    value={userData.password}
+                                                                    onChange={handleChange}
+                                                                    name='password'
                                                                     autoComplete="current-password"
                                                                     required
                                                                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                                 />
                                                             </div>
                                                         </div>
-                                                        <div className="w-2/5">
+                                                        <div className="w-full lg:w-[45%]">
                                                             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
                                                                 Confirm Password
                                                             </label>
@@ -212,6 +233,8 @@ export default function SignUp(props) {
                                                                 <input
                                                                     id="password"
                                                                     name="confirmPassword"
+                                                                    value={userData.confirmPassword}
+                                                                    onChange={handleChange}
                                                                     type="password"
                                                                     autoComplete="current-password"
                                                                     required
@@ -220,6 +243,9 @@ export default function SignUp(props) {
                                                             </div>
                                                         </div>
                                                     </form>
+                                                    <div>
+                                                        {err!==""?<p className='text-red-600 text-sm m-5 text-center'>{err}</p>:<></>}
+                                                    </div>
                                                     <div className='mt-10'>
                                                         <button
                                                             onClick={onFormSubmit}
@@ -230,7 +256,7 @@ export default function SignUp(props) {
                                                         </button>
                                                     </div>
 
-                                                    <p onClick={handleOpen} className="cursor-pointer font-medium text-indigo-600 hover:text-indigo-500 text-center	">
+                                                    <p onClick={handleOpen} className="cursor-pointer font-medium text-indigo-600 hover:text-indigo-500 text-center	mt-5">
                                                         Login
                                                     </p>
                                                     <div className="mt-6">
@@ -292,6 +318,7 @@ export default function SignUp(props) {
                                         </div>
                                     </div>
                                 </div>
+                                <Loader loading={isloading}/>
                             </div>
                         </Transition.Child>
                     </div>

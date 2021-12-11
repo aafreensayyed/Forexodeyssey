@@ -309,3 +309,7 @@
 .navLink:hover {
     background-color: rgba(55, 65, 81) !important;
 }
+
+.react-tel-input .form-control {
+    width: 100% !important;
+}
