@@ -5,10 +5,11 @@ import { CheckIcon } from '@heroicons/react/outline'
 
 export default function userCreatedModal(props) {
 
-    console.log('*******',props)
     const handleclose=()=>{
         props.closeUserCreated()
     }
+
+    
     return (
         <Transition.Root show={props.isOpen} as={Fragment}>
             <Dialog as="div" className="fixed z-10 inset-0 overflow-y-auto" onClose={handleclose}>

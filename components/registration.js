@@ -3,6 +3,10 @@ import { Fragment, useState, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XIcon } from '@heroicons/react/outline';
 import { useRouter } from 'next/router';
+
+
+
+
 export default function SignUp(props) {
     const [isloading, setIsloading] = useState(false)
 
@@ -15,8 +19,10 @@ export default function SignUp(props) {
 
     const handleSignin = () => {
         props.handleOpenSignin()
-        console.log(props)
+      
     }
+
+
     const onFormSubmit = async (e) => {
         e.preventDefault();
         // Getting value from useRef()
@@ -27,7 +33,8 @@ export default function SignUp(props) {
         const firstName = firstnameRef.current.value;
         const lastName = lastnameRef.current.value
 
-        console.log("*********", email)
+        
+
         //Validation
         if (!email || !email.includes('@') || !password || !phone || !firstName || !lastName) {
             alert('Invalid details');
@@ -48,8 +55,14 @@ export default function SignUp(props) {
             }),
         });
         setIsloading(false)
+
+        
         //Await for data for any desirable next steps
         const data = await res.json();
+        console.log('data',data)
+
+      
+       
         props.userCreated()// logic to open successfully creation of user modal
 
     };

@@ -1,6 +1,10 @@
 import { MongoClient } from 'mongodb';
 import { hash } from 'bcryptjs';
 import dbConnect from '../../../utils/dbconnect';
+const mail = require('@sendgrid/mail');
+
+mail.setApiKey(process.env.SENDGRID_API_KEY);
+
 
 async function handler(req, res) {
     //Only POST mothod is accepted
@@ -37,7 +41,26 @@ async function handler(req, res) {
         });
         //Send success response
         res.status(201).json({ message: 'User created', ...status });
-        //Close DB connection
+        //Logic for sending email
+        const message = `
+            Name: ${firstName}\r\n
+            Email: ${email}\r\n
+            Message: 'Welcome to forexodeyssey
+            `;
+      
+        const data = {
+            to: email,
+            from: 'suraj84467@gmail.com',
+            subject: `New message from forexodeyssey`,
+            text: message,
+            html: message.replace(/\r\n/g, '<br />'),
+          };
+          mail
+          .send(data)
+          .then((res) => {console.log('mailSend',res)})
+          .catch((err)=>{console.log('err',err)})
+
+            //Close DB connection
         client.close();
     } else {
         //Response for other than POST method

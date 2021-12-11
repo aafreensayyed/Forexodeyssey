@@ -1,28 +1,31 @@
-import { Fragment ,useState} from 'react'
-import { Disclosure, Menu, Transition } from '@headlessui/react'
+import { useState } from 'react'
+import { useSession } from 'next-auth/client'
+import { Disclosure } from '@headlessui/react'
 import { SearchIcon } from '@heroicons/react/solid'
-import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
 import SignUp from './login'
 import SignIn from './registration'
 import Link from 'next/link'
 import UserCreatedModal from './userCreatedModal'
+import { signOut } from "next-auth/client"
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
 export default function Example() {
-
+    const [session, loadingSession] = useSession();
     const [isSignupModalOpen, setSignupModalOpen] = useState(false);
     const [isSigninModalOpen, setSigninModalOpen] = useState(false);
-    const [signupModal,setupsigupModal]=useState(false)
+    const [signupModal, setupsigupModal] = useState(false)
 
+
+    console.log('session', session, loadingSession)
 
     const openSignupModal = () => {
         setSignupModalOpen(true);
     }
 
-    
+
     const closeSignupModal = () => {
         setSignupModalOpen(false);
     }
@@ -31,31 +34,32 @@ export default function Example() {
         setSigninModalOpen(false);
     }
 
-    const handleOpen=()=>{
+    const handleOpen = () => {
         setSignupModalOpen(false);
         setSigninModalOpen(true);
     }
-    const handleOpenSignup=()=>{
+    const handleOpenSignup = () => {
         setSignupModalOpen(true);
         setSigninModalOpen(false);
     }
 
-    const handleuserCreated=()=>{
+    const handleuserCreated = () => {
         closeSigninModal()
         setupsigupModal(true)
     }
 
-    const closeUserCreated=()=>{
+    const closeUserCreated = () => {
         setupsigupModal(false)
         setSignupModalOpen(true);
     }
-        
 
-
+    const handleLogout = () => {
+        signOut({ callbackUrl: 'http://localhost:3001' })
+    }
 
     return (
         <>
-            <SignIn isOpen={isSigninModalOpen} close={closeSigninModal} handleOpenSignup={handleOpenSignup} userCreated={handleuserCreated}  />
+            <SignIn isOpen={isSigninModalOpen} close={closeSigninModal} handleOpenSignup={handleOpenSignup} userCreated={handleuserCreated} />
             <SignUp isOpen={isSignupModalOpen} close={closeSignupModal} handleOpenSignin={handleOpen} />
             <UserCreatedModal isOpen={signupModal} closeUserCreated={closeUserCreated} />
             <Disclosure as="nav" className="bg-gray-800">
@@ -79,28 +83,41 @@ export default function Example() {
                                     <div className="hidden lg:block lg:ml-6">
                                         <div className="flex space-x-4 items-center">
                                             {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
-                                            <Link href="/" className="bg-white-900  px-3 py-2 rounded-md text-sm font-medium" style={{'color':'#fff'}}>
-                                                Home
-                                            </Link>
-                                            <Link
-                                                href="/about"
-                                                className="hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                                            >
-                                                About
-                                            </Link>
-                                            <Link
-                                                href="#"
-                                                className=" hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                                            >
-                                                Stats
-                                            </Link>
-                                            <p
-                                                onClick={openSignupModal}
+                                            <Link href="/"  >
+                                                <a className="hover:bg-gray-700 hover:text-white  text-gray-300 px-3 py-2 rounded-md font-medium">
+                                                    Home
+                                                </a>
 
-                                                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                                            </Link>
+                                            <Link href="/about"  >
+                                                <a className="hover:bg-gray-700 hover:text-white text-gray-300  px-3 py-2 rounded-md font-medium">
+                                                    About
+                                                </a>
+
+                                            </Link>
+
+                                            <Link
+                                                href="/stats"
+
                                             >
-                                                Sign In
-                                            </p>
+                                                <a className="hover:bg-gray-700 hover:text-white  text-gray-300 px-3 py-2 rounded-md font-medium">
+                                                    Stats
+                                                </a>
+                                            </Link>
+                                            {session === null ?
+                                                <p
+                                                    onClick={openSignupModal}
+
+                                                    className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md font-medium cursor-pointer"
+                                                >
+                                                    Sign In
+                                                </p> :
+                                                <p
+                                                    onClick={handleLogout}
+                                                    className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md font-medium cursor-pointer"
+                                                >
+                                                    SignOut
+                                                </p>}
                                         </div>
                                     </div>
                                 </div>
